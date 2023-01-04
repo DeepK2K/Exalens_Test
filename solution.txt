@@ -1,0 +1,130 @@
+function apartmentHunting(blocks, reqs) {
+  let shortestDistanceToReqs = reqs.map((requirement) => shortestDistBtwEachBlockAndReq(requirement,blocks))
+  //console.log(shortestDistanceToReqs)
+  let longestDistanceToAllReqs = longestDistanceForAllRequirements(shortestDistanceToReqs, blocks)
+  //console.log("maxDistanceList",longestDistanceToAllReqs)
+  return longestDistanceToAllReqs.indexOf(Math.min(...longestDistanceToAllReqs))
+  
+}
+
+function shortestDistBtwEachBlockAndReq(requirements, blocksList){
+  let closeList = blocksList.map((el) => Infinity)
+  //console.log(closeList)
+  let currentClosest = Infinity
+  for(let i = 0; i < blocksList.length; i++){
+    let currBlock = blocksList[i]
+    if(currBlock[requirements]===true) {
+      currentClosest = i 
+    } 
+    closeList[i] = Math.abs(currentClosest - i)
+  }
+  //console.log("i",closeList)
+
+  for(let j = blocksList.length - 2; j >= 0; j--){
+    let currBlock = blocksList[j]
+    if(currBlock[requirements]===true) {
+      currentClosest = j
+    }
+    closeList[j] = Math.min(closeList[j], Math.abs(currentClosest - j))
+  }
+  //console.log("j",closeList)
+  return closeList
+}
+
+function longestDistanceForAllRequirements(closeList, blocksList){
+let maxDistanceList = []
+  for(let i = 0; i < blocksList.length; i++){
+      let currentMaxDistance = -Infinity
+      for(let j = 0; j < closeList.length; j++){
+          currentMaxDistance = Math.max(currentMaxDistance, closeList[j][i])
+      }
+
+      maxDistanceList[i] = currentMaxDistance
+  }
+  
+  return maxDistanceList
+}
+
+
+const blocks=[
+  {
+  "gym": true,"school":false,"store": false,"college": true
+  },
+  {
+  "gym":true,"school": false,"store": false,"college": true
+  },
+  {
+  "gym":true,"school":true,"store": true,"college": false
+  },
+  {
+  "gym": false, "school":true,"store": false,"college": false
+  },
+  {
+  "gym": true,"school":true,"store":true,"college": false
+  }
+  ]
+  const requirements=["gym","school","college","store"]
+ 
+  console.log(apartmentHunting(blocks,requirements))
+
+// Do not edit the line below.
+exports.apartmentHunting = apartmentHunting;
+
+
+Solution Explanation:
+
+The function 'apartmentHunting' takes in two arguments:
+
+'blocks', which is an array of blocks where each block is an object that has a list of boolean properties (e.g. gym, school, store)
+'reqs', which is an array of strings representing the requirements (e.g. gym, school, store)
+It has three functions inside it:
+
+'shortestDistBtwEachBlockAndReq': This function calculates the shortest distance between each block and a requirement. It takes in the requirement and the array of blocks as arguments. 
+It first initializes an array 'closeList' with the same length as 'blocksList' and fills it with the value Infinity.
+It then iterates through the blocks from left to right and updates 'currentClosest' to the index of the first block that satisfies the requirement.
+It then updates 'closeList[i]' to be the absolute difference between 'currentClosest' and 'i'. 
+It then does the same thing in reverse, iterating through the blocks from right to left and updating 'closeList[j]' to be the minimum of itself and the absolute difference between 
+'currentClosest' and 'j'.
+It returns 'closeList'.
+
+'longestDistanceForAllRequirements': This function calculates the longest distance between a block and all the requirements. It takes in 'closeList' and 'blocksList' as arguments. 
+It initializes an empty array 'maxDistanceList' and then iterates through the blocks. For each block at index 'i', it calculates the maximum distance between the block and a requirement
+by iterating through 'closeList' and taking the maximum of currentMaxDistance and the distance at index 'i' in each subarray of 'closeList'. 
+It then updates 'maxDistanceList[i]' to be this maximum distance. It returns 'maxDistanceList'.
+
+'apartmentHunting': This function first calls 'shortestDistBtwEachBlockAndReq' on each requirement in 'reqs' and stores the resulting 2D array in 'shortestDistanceToReqs'. 
+It then calls 'longestDistanceForAllRequirements' on 'shortestDistanceToReqs' and blocks and stores the result in 'longestDistanceToAllReqs'. 
+It then returns the index of the minimum value in 'longestDistanceToAllReqs'.
+
+
+Soution as Output:
+Iniital Value of 'closeList' after mapping each element to Infinity:
+[ Infinity, Infinity, Infinity, Infinity, Infinity ]
+[ Infinity, Infinity, Infinity, Infinity, Infinity ]
+[ Infinity, Infinity, Infinity, Infinity, Infinity ]
+[ Infinity, Infinity, Infinity, Infinity, Infinity ]
+
+'closeList' after updating values from left to right:
+i [ 0, 0, 0, 1, 0 ]
+i [ Infinity, Infinity, 0, 0, 0 ]
+i [ 0, 0, 1, 2, 3 ]
+i [ Infinity, Infinity, 0, 1, 0 ]
+
+'closeList' after updating values from right to left:
+j [ 0, 0, 0, 1, 0 ]
+j [ 2, 1, 0, 0, 0 ]
+j [ 0, 0, 1, 2, 3 ]
+j [ 2, 1, 0, 1, 0 ]
+
+'maxDistanceList' after finding longest distance between a block and all requirements:
+'closeList':[
+  [ 0, 0, 0, 1, 0 ],
+  [ 2, 1, 0, 0, 0 ],
+  [ 0, 0, 1, 2, 3 ],
+  [ 2, 1, 0, 1, 0 ]
+]
+//maxDistList values contain the maximum distance to be travelled to all the requirements from each block from the nested array 'closeList'.
+ maxDistanceList [ 2, 1, 1, 2, 3 ]
+
+The index of samllest value in 'maxList' which contains the maximum distance to be travelled to all the requirements is the final Output(According to current list of blocks(input) 'blocks' and requirements(input) 'reqs'):
+1
